@@ -18,10 +18,6 @@ var runSequence = require('run-sequence');
 var sass = require('gulp-sass');
 var sourcemaps = require('gulp-sourcemaps');
 var uglify = require('gulp-uglify');
-var harp = require("harp");
-var copy2 = require('gulp-copy2');
-var shell = require('gulp-shell');
-var deploy = require('gulp-gh-pages');
 
 /**
  * 资源说明文件路径
@@ -111,26 +107,6 @@ var cssTasks = function (filename) {
             }));
         })();
 };
-
-
-/**
- * 复制生成的前端文件到 halp 目录
- */
-gulp.task('copy', function () {
-    var paths = [
-        {src: 'dist/**/*', dest: 'docs/www/dist/'}
-    ];
-    return copy2(paths);
-});
-
-
-/**
- * 编译 docs 文件夹里面的说明文档
- */
-gulp.task('harp', shell.task([
-    'harp compile docs',
-    'gulp copy'
-]));
 
 /**
  * JS 处理管道
@@ -266,11 +242,10 @@ gulp.task('watch', function () {
             blacklist: ['/wp-admin/**']
         }
     });
-    gulp.watch([path.source + 'styles/**/*'], ['styles', 'copy']);
-    gulp.watch([path.source + 'scripts/**/*'], ['jshint', 'scripts', 'copy']);
-    gulp.watch([path.source + 'fonts/**/*'], ['fonts', 'copy']);
-    gulp.watch([path.source + 'images/**/*'], ['images', 'copy']);
-    gulp.watch([path.source + '../docs/public/**/*'], ['harp']);
+    gulp.watch([path.source + 'styles/**/*'], ['styles']);
+    gulp.watch([path.source + 'scripts/**/*'], ['jshint', 'scripts']);
+    gulp.watch([path.source + 'fonts/**/*'], ['fonts']);
+    gulp.watch([path.source + 'images/**/*'], ['images']);
     gulp.watch(['bower.json', 'assets/manifest.json'], ['build']);
 });
 
@@ -282,7 +257,6 @@ gulp.task('build', function (callback) {
     runSequence('styles',
         'scripts',
         ['fonts', 'images'],
-        'harp',
         callback);
 });
 
@@ -299,16 +273,6 @@ gulp.task('wiredep', function () {
         }))
         .pipe(gulp.dest(path.source + 'styles'));
 });
-
-
-/**
- * 发布到 gh-pages
- */
-gulp.task('deploy', ['build'], function () {
-    return gulp.src("docs/www/**/*")
-        .pipe(deploy());
-});
-
 
 /**
  * 默认使用， 进行完整编译， 为生产环境编译使用 `gulp --production`
