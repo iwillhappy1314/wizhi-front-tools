@@ -18,6 +18,7 @@ var runSequence = require('run-sequence');
 var sass = require('gulp-sass');
 var sourcemaps = require('gulp-sourcemaps');
 var uglify = require('gulp-uglify');
+var pxtorem = require('gulp-pxtorem');
 
 /**
  * 资源说明文件路径
@@ -97,6 +98,14 @@ var cssTasks = function (filename) {
         })
         .pipe(cssNano, {
             safe: true
+        })
+        .pipe(pxtorem, {
+            rootValue: 16,
+            propWhiteList: ['font',
+                'padding', 'padding-left', 'padding-right', 'padding-top', 'padding-bottom',
+                'margin', 'margin-left', 'margin-right', 'margin-top', 'margin-bottom',
+                'width', 'height', 'line-height', 'max-width', 'font-size', 'letter-spacing'],
+            replace: false
         })
         .pipe(function () {
             return gulpif(enabled.rev, rev());

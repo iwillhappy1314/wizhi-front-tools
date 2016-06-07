@@ -58,6 +58,7 @@
     "gulp-gh-pages": "*",
     "gulp-copy2": "*",
     "gulp-shell": "*",
-    "harp": "*"
+    "harp": "*",
+    "gulp-pxtorem": "*"
   }
 }
