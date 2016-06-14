@@ -19,6 +19,8 @@ var sass = require('gulp-sass');
 var sourcemaps = require('gulp-sourcemaps');
 var uglify = require('gulp-uglify');
 var pxtorem = require('gulp-pxtorem');
+var sprity = require('sprity');
+
 
 /**
  * 资源说明文件路径
@@ -90,11 +92,9 @@ var cssTasks = function (filename) {
         })
         .pipe(concat, filename)
         .pipe(autoprefixer, {
-            browsers: [
-                'last 2 versions',
+            browsers: ['last 2 versions',
                 'android 4',
-                'opera 12'
-            ]
+                'opera 12']
         })
         .pipe(cssNano, {
             safe: true
@@ -102,9 +102,22 @@ var cssTasks = function (filename) {
         .pipe(pxtorem, {
             rootValue: 16,
             propWhiteList: ['font',
-                'padding', 'padding-left', 'padding-right', 'padding-top', 'padding-bottom',
-                'margin', 'margin-left', 'margin-right', 'margin-top', 'margin-bottom',
-                'width', 'height', 'line-height', 'max-width', 'font-size', 'letter-spacing'],
+                'padding',
+                'padding-left',
+                'padding-right',
+                'padding-top',
+                'padding-bottom',
+                'margin',
+                'margin-left',
+                'margin-right',
+                'margin-top',
+                'margin-bottom',
+                'width',
+                'height',
+                'line-height',
+                'max-width',
+                'font-size',
+                'letter-spacing'],
             replace: false
         })
         .pipe(function () {
@@ -171,7 +184,7 @@ gulp.task('styles', ['wiredep'], function () {
             });
         }
         merged.add(gulp.src(dep.globs, {base: 'styles'})
-            .pipe(cssTasksInstance));
+                       .pipe(cssTasksInstance));
     });
     return merged
         .pipe(writeToManifest('styles'));
@@ -184,13 +197,23 @@ gulp.task('styles', ['wiredep'], function () {
 gulp.task('scripts', ['jshint'], function () {
     var merged = merge();
     manifest.forEachDependency('js', function (dep) {
-        merged.add(
-            gulp.src(dep.globs, {base: 'scripts'})
-                .pipe(jsTasks(dep.name))
-        );
+        merged.add(gulp.src(dep.globs, {base: 'scripts'})
+                       .pipe(jsTasks(dep.name)));
     });
     return merged
         .pipe(writeToManifest('scripts'));
+});
+
+
+// CSS 雪饼图
+gulp.task('sprites', function () {
+    return sprity.src({
+                     src: path.source + 'images/icons/*.{png,jpg,gif}',
+                     style: './_sprite.less', // ... other optional options
+                     // for example if you want to generate scss instead of css
+                     processor: 'less' // make sure you have installed sprity-sass
+                 })
+                 .pipe(gulpif('*.png', gulp.dest(path.dist + 'images'), gulp.dest(path.source + 'styles')));
 });
 
 
@@ -199,9 +222,9 @@ gulp.task('scripts', ['jshint'], function () {
  */
 gulp.task('fonts', function () {
     return gulp.src(globs.fonts)
-        .pipe(flatten())
-        .pipe(gulp.dest(path.dist + 'fonts'))
-        .pipe(browserSync.stream());
+               .pipe(flatten())
+               .pipe(gulp.dest(path.dist + 'fonts'))
+               .pipe(browserSync.stream());
 });
 
 
@@ -210,13 +233,14 @@ gulp.task('fonts', function () {
  */
 gulp.task('images', function () {
     return gulp.src(globs.images)
-        .pipe(imagemin({
-            progressive: true,
-            interlaced: true,
-            svgoPlugins: [{removeUnknownsAndDefaults: false}, {cleanupIDs: false}]
-        }))
-        .pipe(gulp.dest(path.dist + 'images'))
-        .pipe(browserSync.stream());
+               .pipe(imagemin({
+                   progressive: true,
+                   interlaced: true,
+                   svgoPlugins: [{removeUnknownsAndDefaults: false},
+                       {cleanupIDs: false}]
+               }))
+               .pipe(gulp.dest(path.dist + 'images'))
+               .pipe(browserSync.stream());
 });
 
 
@@ -224,12 +248,11 @@ gulp.task('images', function () {
  * JSHint 任务
  */
 gulp.task('jshint', function () {
-    return gulp.src([
-            'bower.json', 'gulpfile.js'
-        ].concat(project.js))
-        .pipe(jshint())
-        .pipe(jshint.reporter('jshint-stylish'))
-        .pipe(gulpif(enabled.failJSHint, jshint.reporter('fail')));
+    return gulp.src(['bower.json',
+                   'gulpfile.js'].concat(project.js))
+               .pipe(jshint())
+               .pipe(jshint.reporter('jshint-stylish'))
+               .pipe(gulpif(enabled.failJSHint, jshint.reporter('fail')));
 });
 
 
@@ -244,7 +267,8 @@ gulp.task('clean', require('del').bind(null, [path.dist]));
  */
 gulp.task('watch', function () {
     browserSync.init({
-        files: ['{lib,templates}/**/*.php', '*.php'],
+        files: ['{lib,templates}/**/*.php',
+            '*.php'],
         proxy: config.devUrl,
         snippetOptions: {
             whitelist: ['/wp-admin/admin-ajax.php'],
@@ -252,10 +276,13 @@ gulp.task('watch', function () {
         }
     });
     gulp.watch([path.source + 'styles/**/*'], ['styles']);
-    gulp.watch([path.source + 'scripts/**/*'], ['jshint', 'scripts']);
+    gulp.watch([path.source + 'scripts/**/*'], ['jshint',
+        'scripts']);
     gulp.watch([path.source + 'fonts/**/*'], ['fonts']);
     gulp.watch([path.source + 'images/**/*'], ['images']);
-    gulp.watch(['bower.json', 'assets/manifest.json'], ['build']);
+    gulp.watch([path.source + 'images/icons/*'], ['sprites']);
+    gulp.watch(['bower.json',
+        'assets/manifest.json'], ['build']);
 });
 
 
@@ -263,10 +290,8 @@ gulp.task('watch', function () {
  * 编译所有资源
  */
 gulp.task('build', function (callback) {
-    runSequence('styles',
-        'scripts',
-        ['fonts', 'images'],
-        callback);
+    runSequence('styles', 'scripts', 'sprites', ['fonts',
+        'images'], callback);
 });
 
 
@@ -276,11 +301,11 @@ gulp.task('build', function (callback) {
 gulp.task('wiredep', function () {
     var wiredep = require('wiredep').stream;
     return gulp.src(project.css)
-        .pipe(wiredep())
-        .pipe(changed(path.source + 'styles', {
-            hasChanged: changed.compareSha1Digest
-        }))
-        .pipe(gulp.dest(path.source + 'styles'));
+               .pipe(wiredep())
+               .pipe(changed(path.source + 'styles', {
+                   hasChanged: changed.compareSha1Digest
+               }))
+               .pipe(gulp.dest(path.source + 'styles'));
 });
 
 /**

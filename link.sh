@@ -32,4 +32,6 @@ npm link gulp-copy2
 npm link gulp-shell
 npm link gulp-gh-pages
 npm link harp
+npm link sprity
+npm link sprity-less
 npm link gulp-pxtorem

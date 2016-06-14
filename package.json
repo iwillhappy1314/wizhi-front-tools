@@ -59,6 +59,8 @@
     "gulp-copy2": "*",
     "gulp-shell": "*",
     "harp": "*",
+    "sprity": "*",
+    "sprity-less": "*",
     "gulp-pxtorem": "*"
   }
 }
