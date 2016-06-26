@@ -51,6 +51,47 @@
 }
 
 
+// 菜单皮肤,根据主题修改
+.sf-menu {
+    &:extend(.clearfix all);
+    margin-bottom: 1em;
+    ul {
+        box-shadow: 2px 2px 6px rgba(0, 0, 0, .2);
+        min-width: 120px;
+        li {
+            background: @maincolor;
+        }
+        ul {
+            li {
+                background: @maincolor;
+            }
+        }
+    }
+    li {
+        background: @maincolor;
+        white-space: nowrap;
+        *white-space: normal;
+        transition: background .2s;
+        &.current-menu-item,
+        &:hover,
+        &.sfHover {
+            background: darken(@maincolor, 10%);
+            transition: none;
+            a {
+                color: #fff !important;
+            }
+        }
+
+    }
+    a {
+        color: #fff;
+        padding: 8px 10px;
+        text-decoration: none;
+        zoom: 1;
+    }
+}
+
+
 /* --------------------------------------------------------------
 * = 排版
 * ----------------------------------------------------------- */
