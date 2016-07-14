@@ -20,6 +20,7 @@ var sourcemaps = require('gulp-sourcemaps');
 var uglify = require('gulp-uglify');
 var pxtorem = require('gulp-pxtorem');
 var sprity = require('sprity');
+var coffee = require('gulp-coffee');
 
 
 /**
@@ -137,6 +138,9 @@ var jsTasks = function (filename) {
     return lazypipe()
         .pipe(function () {
             return gulpif(enabled.maps, sourcemaps.init());
+        })
+        .pipe(function () {
+            return gulpif('*.coffee', coffee({bare: true}).on('error', console.log));
         })
         .pipe(concat, filename)
         .pipe(uglify, {
