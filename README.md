@@ -1,3 +1,4 @@
+
 Wizhi 前端工具
 ===
 
@@ -16,6 +17,11 @@ Wizhi 前端工具
 ## 命令
 ---------------
 
+- `gulp styles`: 编译、合并、优化 Bower CSS 和项目 CSS
+- `gulp scripts`: 运行 JSHint 然后编译、合并、优化 Bower JS 和项目 JS
+- `gulp sprites`: 生成 CSS 雪饼图
+- `gulp fonts`: 收集所有的字体并输出到 fonts 文件夹
+- `gulp images`: 无损压缩图像
 - `gulp watch`: 监控前端文件修改，并实时同步到浏览器中
 - `gulp build`: 构建前端文件， 生成说明文档
 - `gulp build --production`: 为生产环境构建前端文件，不会生成 source map
