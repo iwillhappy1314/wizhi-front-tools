@@ -28,7 +28,6 @@ npm link yargs
 npm link minimist
 npm link browser-sync
 npm link gulp-sass
-npm link sprity
 npm link gulp-copy2
 npm link gulp-shell
 npm link gulp-gh-pages
