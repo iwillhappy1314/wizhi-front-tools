@@ -54,13 +54,6 @@
     "run-sequence": "^1.0.2",
     "traverse": "^0.6.6",
     "wiredep": "^2.2.2",
-    "yargs": "^3.6.0",
-    "gulp-gh-pages": "*",
-    "gulp-copy2": "*",
-    "gulp-shell": "*",
-    "harp": "*",
-    "sprity": "*",
-    "sprity-less": "*",
-    "gulp-pxtorem": "*"
+    "yargs": "^3.6.0"
   }
 }
