@@ -8,13 +8,12 @@
   "private": true,
   "dependencies": {
     "modernizr": "2.8.2",
-    "bootstrap": "^3.3.7"
+    "bootstrap": "^3.3.7",
+    "bxslider-4": "^4.2.12"
   },
   "overrides": {
-    "modernizr": {
-      "main": "./modernizr.js"
+    "bxslider-4": {
+      "main": "./dist/jquery.bxslider.js"
     }
-  },
-  "resolutions": {
   }
 }

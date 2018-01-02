@@ -3,9 +3,7 @@
     "main.js": {
       "files": [
         "scripts/plugins/*.js",
-        "scripts/plugins/*.coffee",
-        "scripts/main.js",
-        "scripts/main.coffee"
+        "scripts/main.js"
       ],
       "main": true
     },
