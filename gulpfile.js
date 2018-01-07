@@ -18,7 +18,7 @@ var runSequence = require('run-sequence');
 var sass = require('gulp-sass');
 var sourcemaps = require('gulp-sourcemaps');
 var uglify = require('gulp-uglify');
-var cache = require('gulp-cached');
+
 
 /**
  * 资源说明文件路径
@@ -54,10 +54,10 @@ var project = manifest.getProjectGlobs();
  */
 var enabled = {
     rev: argv.production,
-    maps         : !argv.production,
+    maps: !argv.production,
     failStyleTask: argv.production,
-    failJSHint   : argv.production,
-    stripJSDebug : argv.production
+    failJSHint: argv.production,
+    stripJSDebug: argv.production
 };
 
 
@@ -71,9 +71,6 @@ var revManifest = path.dist + 'assets.json';
  */
 var cssTasks = function (filename) {
     return lazypipe()
-        .pipe(function(){
-            return cache('cssTasks');
-        })
         .pipe(function () {
             return gulpif(!enabled.failStyleTask, plumber());
         })
@@ -84,18 +81,10 @@ var cssTasks = function (filename) {
             return gulpif('*.less', less());
         })
         .pipe(function () {
-            return gulpif('*.scss', sass({
-                outputStyle    : 'nested', // libsass doesn't support expanded yet
-                precision      : 10,
-                includePaths   : ['.'],
-                errLogToConsole: !enabled.failStyleTask
-            }));
-        })
-        .pipe(function () {
             return gulpif('*.sass', sass({
-                outputStyle    : 'nested', // libsass doesn't support expanded yet
-                precision      : 10,
-                includePaths   : ['.'],
+                outputStyle: 'nested', // libsass doesn't support expanded yet
+                precision: 10,
+                includePaths: ['.'],
                 errLogToConsole: !enabled.failStyleTask
             }));
         })
@@ -123,9 +112,6 @@ var cssTasks = function (filename) {
  */
 var jsTasks = function (filename) {
     return lazypipe()
-        .pipe(function(){
-            return cache('jsTasks');
-        })
         .pipe(function () {
             return gulpif(enabled.maps, sourcemaps.init());
         })
@@ -151,13 +137,10 @@ var jsTasks = function (filename) {
  */
 var writeToManifest = function (directory) {
     return lazypipe()
-        .pipe(function(){
-            return cache('Manifest');
-        })
         .pipe(gulp.dest, path.dist + directory)
         .pipe(browserSync.stream, {match: '**/*.{js,css}'})
         .pipe(rev.manifest, revManifest, {
-            base : path.dist,
+            base: path.dist,
             merge: true
         })
         .pipe(gulp.dest, path.dist)();
@@ -165,7 +148,7 @@ var writeToManifest = function (directory) {
 
 
 /**
- * 编译、合并、优化框架 CSS 和项目 CSS
+ * 编译、合并、优化 Bower CSS 和项目 CSS
  */
 gulp.task('styles', ['wiredep'], function () {
     var merged = merge();
@@ -186,7 +169,7 @@ gulp.task('styles', ['wiredep'], function () {
 
 
 /**
- * 运行 JSHint 然后编译、合并、优化框架 JS 和项目 JS
+ * 运行 JSHint 然后编译、合并、优化 Bower JS 和项目 JS
  */
 gulp.task('scripts', ['jshint'], function () {
     var merged = merge();
@@ -198,13 +181,11 @@ gulp.task('scripts', ['jshint'], function () {
         .pipe(writeToManifest('scripts'));
 });
 
-
 /**
  * 收集所有的字体并输出到 fonts 文件夹
  */
 gulp.task('fonts', function () {
     return gulp.src(globs.fonts)
-               .pipe(cache('fonts'))
                .pipe(flatten())
                .pipe(gulp.dest(path.dist + 'fonts'))
                .pipe(browserSync.stream());
@@ -216,10 +197,9 @@ gulp.task('fonts', function () {
  */
 gulp.task('images', function () {
     return gulp.src(globs.images)
-               .pipe(cache('images'))
                .pipe(imagemin({
                    progressive: true,
-                   interlaced : true,
+                   interlaced: true,
                    svgoPlugins: [{removeUnknownsAndDefaults: false},
                        {cleanupIDs: false}]
                }))
@@ -232,8 +212,8 @@ gulp.task('images', function () {
  * JSHint 任务
  */
 gulp.task('jshint', function () {
-    return gulp.src(['gulpfile.js'].concat(project.js))
-               .pipe(cache('jshint'))
+    return gulp.src(['bower.json',
+        'gulpfile.js'].concat(project.js))
                .pipe(jshint())
                .pipe(jshint.reporter('jshint-stylish'))
                .pipe(gulpif(enabled.failJSHint, jshint.reporter('fail')));
@@ -251,9 +231,9 @@ gulp.task('clean', require('del').bind(null, [path.dist]));
  */
 gulp.task('watch', function () {
     browserSync.init({
-        files         : ['{lib,templates}/**/*.php',
+        files: ['{lib,templates}/**/*.php',
             '*.php'],
-        proxy         : config.devUrl,
+        proxy: config.devUrl,
         snippetOptions: {
             whitelist: ['/wp-admin/admin-ajax.php'],
             blacklist: ['/wp-admin/**']
@@ -264,7 +244,8 @@ gulp.task('watch', function () {
         'scripts']);
     gulp.watch([path.source + 'fonts/**/*'], ['fonts']);
     gulp.watch([path.source + 'images/**/*'], ['images']);
-    gulp.watch(['assets/manifest.json'], ['build']);
+    gulp.watch(['bower.json',
+        'assets/manifest.json'], ['build']);
 });
 
 
@@ -278,12 +259,11 @@ gulp.task('build', function (callback) {
 
 
 /**
- * 自动注入 Less 和 Sass
+ * 自动注入 Less 和 Sass bower 依赖
  */
 gulp.task('wiredep', function () {
     var wiredep = require('wiredep').stream;
     return gulp.src(project.css)
-               .pipe(cache('wiredep'))
                .pipe(wiredep())
                .pipe(changed(path.source + 'styles', {
                    hasChanged: changed.compareSha1Digest
