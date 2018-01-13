@@ -18,7 +18,7 @@ var runSequence = require('run-sequence');
 var sass = require('gulp-sass');
 var sourcemaps = require('gulp-sourcemaps');
 var uglify = require('gulp-uglify');
-
+var notify = require("gulp-notify");
 
 /**
  * 资源说明文件路径
@@ -94,8 +94,8 @@ var cssTasks = function (filename) {
                 'android 4',
                 'opera 12']
         })
-        .pipe(cssNano, {
-            safe: true
+        .pipe(function () {
+            return gulpif(enabled.rev, cssNano({safe: true}));
         })
         .pipe(function () {
             return gulpif(enabled.rev, rev());
@@ -104,6 +104,9 @@ var cssTasks = function (filename) {
             return gulpif(enabled.maps, sourcemaps.write('.', {
                 sourceRoot: 'assets/styles/'
             }));
+        })
+        .pipe(function(){
+            return notify({ message: '编译 CSS 完成。' });
         })();
 };
 
@@ -128,6 +131,9 @@ var jsTasks = function (filename) {
             return gulpif(enabled.maps, sourcemaps.write('.', {
                 sourceRoot: 'assets/scripts/'
             }));
+        })
+        .pipe(function(){
+            return notify({ message: '编译 JavaScript 完成。' });
         })();
 };
 
