@@ -53,11 +53,11 @@ var project = manifest.getProjectGlobs();
  * 编译时的选项
  */
 var enabled = {
-    rev: argv.production,
-    maps: !argv.production,
+    rev          : argv.production,
+    maps         : !argv.production,
     failStyleTask: argv.production,
-    failJSHint: argv.production,
-    stripJSDebug: argv.production
+    failJSHint   : argv.production,
+    stripJSDebug : argv.production
 };
 
 
@@ -82,9 +82,9 @@ var cssTasks = function (filename) {
         })
         .pipe(function () {
             return gulpif('*.sass', sass({
-                outputStyle: 'nested', // libsass doesn't support expanded yet
-                precision: 10,
-                includePaths: ['.'],
+                outputStyle    : 'nested', // libsass doesn't support expanded yet
+                precision      : 10,
+                includePaths   : ['.'],
                 errLogToConsole: !enabled.failStyleTask
             }));
         })
@@ -105,8 +105,8 @@ var cssTasks = function (filename) {
                 sourceRoot: 'assets/styles/'
             }));
         })
-        .pipe(function(){
-            return notify({ message: '编译 CSS 完成。' });
+        .pipe(function () {
+            return notify({message: '编译 CSS 完成。'});
         })();
 };
 
@@ -119,10 +119,12 @@ var jsTasks = function (filename) {
             return gulpif(enabled.maps, sourcemaps.init());
         })
         .pipe(concat, filename)
-        .pipe(uglify, {
-            compress: {
-                'drop_debugger': enabled.stripJSDebug
-            }
+        .pipe(function () {
+            return gulpif(enabled.rev, uglify({
+                compress: {
+                    'drop_debugger': enabled.stripJSDebug
+                }
+            }));
         })
         .pipe(function () {
             return gulpif(enabled.rev, rev());
@@ -132,8 +134,8 @@ var jsTasks = function (filename) {
                 sourceRoot: 'assets/scripts/'
             }));
         })
-        .pipe(function(){
-            return notify({ message: '编译 JavaScript 完成。' });
+        .pipe(function () {
+            return notify({message: '编译 JavaScript 完成。'});
         })();
 };
 
@@ -146,7 +148,7 @@ var writeToManifest = function (directory) {
         .pipe(gulp.dest, path.dist + directory)
         .pipe(browserSync.stream, {match: '**/*.{js,css}'})
         .pipe(rev.manifest, revManifest, {
-            base: path.dist,
+            base : path.dist,
             merge: true
         })
         .pipe(gulp.dest, path.dist)();
@@ -205,7 +207,7 @@ gulp.task('images', function () {
     return gulp.src(globs.images)
                .pipe(imagemin({
                    progressive: true,
-                   interlaced: true,
+                   interlaced : true,
                    svgoPlugins: [{removeUnknownsAndDefaults: false},
                        {cleanupIDs: false}]
                }))
@@ -237,9 +239,9 @@ gulp.task('clean', require('del').bind(null, [path.dist]));
  */
 gulp.task('watch', function () {
     browserSync.init({
-        files: ['{lib,templates}/**/*.php',
+        files         : ['{lib,templates}/**/*.php',
             '*.php'],
-        proxy: config.devUrl,
+        proxy         : config.devUrl,
         snippetOptions: {
             whitelist: ['/wp-admin/admin-ajax.php'],
             blacklist: ['/wp-admin/**']
