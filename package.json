@@ -48,7 +48,7 @@
     "gulp-sourcemaps": "^2.6.5",
     "gulp-uglify": "^3.0.2",
     "imagemin-pngcrush": "^6.0.0",
-    "jshint": "^2.9.3",
+    "jshint": "^2.10.2",
     "jshint-stylish": "^2.0.1",
     "lazypipe": "^1.0.1",
     "merge-stream": "^1.0.0",
