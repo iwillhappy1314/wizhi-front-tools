@@ -18,7 +18,8 @@
     }
   ],
   "scripts": {
-    "build": "gulp build",
+    "dev": "gulp build",
+    "build": "gulp build --production",
     "watch": "gulp watch",
     "jshint": "gulp jshint",
     "jscs": "jscs gulpfile.js assets/scripts/*.js"
