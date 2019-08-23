@@ -36,7 +36,7 @@
   "devDependencies": {
     "asset-builder": "^2.0.0",
     "browser-sync": "^2.26.7",
-    "del": "^5.0.0",
+    "del": "^5.1.0",
     "gulp": "^4.0",
     "gulp-autoprefixer": "^7.0.0",
     "gulp-changed": "^4.0.1",
