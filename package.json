@@ -34,6 +34,7 @@
     "IE 10"
   ],
   "devDependencies": {
+    "@babel/core": "^7.6.0",
     "asset-builder": "^2.0.0",
     "browser-sync": "^2.26.7",
     "del": "^5.1.0",
@@ -54,6 +55,7 @@
     "gulp-rename": "^1.4.0",
     "gulp-rev": "^9.0.0",
     "gulp-sass": "^4.0.2",
+    "gulp-sass-themes": "^2.0.2",
     "gulp-sourcemaps": "^2.6.5",
     "gulp-uglify": "^3.0.2",
     "gulp-uglify-es": "^1.0.4",
