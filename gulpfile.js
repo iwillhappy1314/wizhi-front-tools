@@ -1,58 +1,60 @@
-var argv = require('minimist')(process.argv.slice(2));
-var autoprefixer = require('gulp-autoprefixer');
-var browserSync = require('browser-sync').create();
-var changed = require('gulp-changed');
-var concat = require('gulp-concat');
-var flatten = require('gulp-flatten');
-var gulp = require('gulp');
-var gulpif = require('gulp-if');
-var imagemin = require('gulp-imagemin');
-var jshint = require('gulp-jshint');
-var lazypipe = require('lazypipe');
-var merge = require('merge-stream');
-var cssNano = require('gulp-cssnano');
-var plumber = require('gulp-plumber');
-var rev = require('gulp-rev');
-var sass = require('gulp-sass');
-var sourcemaps = require('gulp-sourcemaps');
-//var uglify = require('gulp-uglify-es').default;
-//var babel = require('gulp-babel');
+const argv = require('minimist')(process.argv.slice(2));
+const autoprefixer = require('gulp-autoprefixer');
+const browserSync = require('browser-sync').create();
+const changed = require('gulp-changed');
+const concat = require('gulp-concat');
+const flatten = require('gulp-flatten');
+const gulp = require('gulp');
+const gulpif = require('gulp-if');
+const imagemin = require('gulp-imagemin');
+const jshint = require('gulp-jshint');
+const lazypipe = require('lazypipe');
+const merge = require('merge-stream');
+const cssNano = require('gulp-cssnano');
+const plumber = require('gulp-plumber');
+const rev = require('gulp-rev');
+const sass = require('gulp-sass');
+const mediaQueriesSplitter = require('gulp-media-queries-splitter');
+const combineMedia = require('gulp-combine-media');
+const sourcemaps = require('gulp-sourcemaps');
+const uglify = require('gulp-uglify-es').default;
+const babel = require('gulp-babel');
 
 /**
  * 资源说明文件路径
  */
-var manifest = require('asset-builder')('./assets/manifest.json');
+const manifest = require('asset-builder')('./assets/manifest.json');
 
 
 /**
  * 资源说明文件里面定义的路径
  */
-var path = manifest.paths;
+const path = manifest.paths;
 
 /**
  * 资源说明文件配置， 在这里设置自定义选项
  */
-var config = manifest.config || {};
+const config = manifest.config || {};
 
 
 /**
  * 全局资源
  */
-var globs = manifest.globs;
+const globs = manifest.globs || {};
 
 
 /**
  * 全局资源
  */
-var project = manifest.getProjectGlobs();
+const project = manifest.getProjectGlobs();
 
 
 /**
  * 编译时的选项
  */
-var enabled = {
+const enabled = {
     rev          : argv.production,
-    maps         : !argv.production,
+    maps         : argv.production,
     failStyleTask: argv.production,
     failJSHint   : argv.production,
     stripJSDebug : argv.production
@@ -62,65 +64,93 @@ var enabled = {
 /**
  * dist 目录中的版本说明文件
  */
-var revManifest = path.dist + 'assets.json';
+const revManifest = path.dist + 'assets.json';
 
 /**
  * CSS 处理管道
  */
-var cssTasks = function (filename) {
+const cssTasks = function (filename) {
+
     return lazypipe()
-        .pipe(function () {
-            return gulpif(!enabled.failStyleTask, plumber());
-        })
-        .pipe(function () {
-            return gulpif(enabled.maps, sourcemaps.init());
-        })
-        .pipe(function () {
-            return gulpif('*.scss', sass({
-                outputStyle    : 'nested', // libsass doesn't support expanded yet
-                precision      : 10,
-                includePaths   : ['.'],
-                errLogToConsole: !enabled.failStyleTask
-            }));
-        })
-        .pipe(concat, filename)
-        .pipe(autoprefixer)
-        .pipe(function () {
-            return gulpif(enabled.rev, cssNano({safe: true}));
-        })
-        .pipe(function () {
-            return gulpif(enabled.rev, rev());
-        })
-        .pipe(function () {
-            return gulpif(enabled.maps, sourcemaps.write('.', {
-                sourceRoot: 'assets/styles/'
-            }));
-        })();
+    .pipe(function () {
+        return gulpif(!enabled.failStyleTask, plumber());
+    })
+     .pipe(function () {
+        return gulpif(enabled.maps, sourcemaps.init());
+    })
+     .pipe(function () {
+        return gulpif('*.scss', sass({
+            outputStyle    : 'nested', // libsass doesn't support expanded yet
+            precision      : 10,
+            includePaths   : ['.'],
+            errLogToConsole: !enabled.failStyleTask
+        }));
+    })
+     .pipe(concat, filename)
+
+    .pipe(function(){
+      const file_name = filename.split('.').slice(0, -1);
+      return mediaQueriesSplitter([
+        // 基础样式，无论大小，都需要使用
+        {media: 'none', filename: file_name + '.base.css'},
+
+        // 平板设备的样式
+        {media: [{min: '576px', minUntil: '768px'}, {min: '576px', max: '768px'}], filename: file_name + '.mobile.css'},
+
+        // 平板电脑样式
+        {media: [{min: '768px', minUntil: '992px'}, {min: '768px', max: '992px'}], filename: file_name + '.tablet.css'},
+
+        // 笔记本电脑样式
+        {media: [{min: '992px', minUntil: '1200px'}, {min: '992px', max: '1200px'}], filename: file_name + '.laptop.css'},
+
+        // 台式机样式
+        {media: ['none', {min: '1200px'}], filename: file_name + '.css'},
+      ]);
+    })
+    .pipe(function(){
+      return combineMedia();
+    })
+     .pipe(autoprefixer)
+     .pipe(function () {
+        return gulpif(enabled.rev, cssNano({safe: true}));
+    })
+    .pipe(function () {
+      return gulpif(!enabled.rev, cssNano({safe: true}));
+    })
+     .pipe(function () {
+        return gulpif(enabled.rev, rev());
+    })
+     .pipe(function () {
+        return gulpif(enabled.maps, sourcemaps.write('.', {
+            sourceRoot: 'assets/styles/'
+        }));
+    })();
 };
+
 
 /**
  * JS 处理管道
  */
-var jsTasks = function (filename) {
+const jsTasks = function (filename) {
     return lazypipe()
-        .pipe(function () {
-            return gulpif(enabled.maps, sourcemaps.init());
-        })
-        .pipe(concat, filename)
-        //.pipe(function () {
-        //  return babel({
-        //    presets: ['env']
-        //  });
-        //})
-        //.pipe(uglify, {
-        //    compress: {
-        //        'drop_debugger': enabled.stripJSDebug
-        //    }
-        //})
-        .pipe(function () {
-            return gulpif(enabled.rev, rev());
-        })
-        .pipe(function () {
+    .pipe(function () {
+        return gulpif(enabled.maps, sourcemaps.init());
+    })
+     .pipe(concat, filename)
+    .pipe(function () {
+      return babel({
+        presets: ['env']
+      });
+    })
+     .pipe(uglify, {
+       compress: {
+         'drop_debugger': enabled.stripJSDebug
+       }
+     })
+     .pipe(function () {
+         return gulpif(enabled.rev, rev());
+     })
+     .pipe(function () {
             return gulpif(enabled.maps, sourcemaps.write('.', {
                 sourceRoot: 'assets/scripts/'
             }));
@@ -131,15 +161,15 @@ var jsTasks = function (filename) {
 /**
  * 写入到版本说明
  */
-var writeToManifest = function (directory) {
+const writeToManifest = function (directory) {
     return lazypipe()
-        .pipe(gulp.dest, path.dist + directory)
-        .pipe(browserSync.stream, {match: '**/*.{js,css}'})
-        .pipe(rev.manifest, revManifest, {
-            base : path.dist,
-            merge: true
-        })
-        .pipe(gulp.dest, path.dist)();
+    .pipe(gulp.dest, path.dist + directory)
+     .pipe(browserSync.stream, {match: '**/*.{js,css}'})
+     .pipe(rev.manifest, revManifest, {
+        base : path.dist,
+        merge: true
+    })
+     .pipe(gulp.dest, path.dist)();
 };
 
 
@@ -147,11 +177,11 @@ var writeToManifest = function (directory) {
  * 自动注入 Less 和 Sass bower 依赖
  */
 gulp.task('wiredep', gulp.series(async() => {
-  var wiredep = require('wiredep').stream;
-  return gulp.src(project.css)
-              .pipe(wiredep())
-              .pipe(changed(path.source + 'styles'))
-              .pipe(gulp.dest(path.source + 'styles'));
+    let wiredep = require('wiredep').stream;
+    return gulp.src(project.css)
+                .pipe(wiredep())
+                .pipe(changed(path.source + 'styles'))
+                .pipe(gulp.dest(path.source + 'styles'));
 }));
 
 
@@ -159,9 +189,9 @@ gulp.task('wiredep', gulp.series(async() => {
  * 编译、合并、优化 Bower CSS 和项目 CSS
  */
 gulp.task('styles',  gulp.series('wiredep', async() => {
-    var merged = merge();
+    const merged = merge();
     manifest.forEachDependency('css', function (dep) {
-        var cssTasksInstance = cssTasks(dep.name);
+      let cssTasksInstance = cssTasks(dep.name);
         if (!enabled.failStyleTask) {
             cssTasksInstance.on('error', function (err) {
                 console.error(err.message);
@@ -169,10 +199,10 @@ gulp.task('styles',  gulp.series('wiredep', async() => {
             });
         }
         merged.add(gulp.src(dep.globs, {base: 'styles'})
-                       .pipe(cssTasksInstance));
+                        .pipe(cssTasksInstance));
     });
     return merged
-        .pipe(writeToManifest('styles'));
+    .pipe(writeToManifest('styles'));
 }));
 
 
@@ -181,13 +211,13 @@ gulp.task('styles',  gulp.series('wiredep', async() => {
  */
 //gulp.task('scripts', ['jshint'], function () {
 gulp.task('scripts', gulp.series(async() => {
-    var merged = merge();
+    const merged = merge();
     manifest.forEachDependency('js', function (dep) {
         merged.add(gulp.src(dep.globs, {base: 'scripts'})
-                       .pipe(jsTasks(dep.name)));
+                        .pipe(jsTasks(dep.name)));
     });
     return merged
-        .pipe(writeToManifest('scripts'));
+    .pipe(writeToManifest('scripts'));
 }));
 
 /**
@@ -195,9 +225,9 @@ gulp.task('scripts', gulp.series(async() => {
  */
 gulp.task('fonts', gulp.series(async() => {
     return gulp.src(globs.fonts)
-               .pipe(flatten())
-               .pipe(gulp.dest(path.dist + 'fonts'))
-               .pipe(browserSync.stream());
+                .pipe(flatten())
+                .pipe(gulp.dest(path.dist + 'fonts'))
+                .pipe(browserSync.stream());
 }));
 
 
@@ -206,14 +236,14 @@ gulp.task('fonts', gulp.series(async() => {
  */
 gulp.task('images', gulp.series(async() => {
     return gulp.src(globs.images)
-               .pipe(imagemin({
-                   progressive: true,
-                   interlaced : true,
-                   svgoPlugins: [{removeUnknownsAndDefaults: false},
-                       {cleanupIDs: false}]
-               }))
-               .pipe(gulp.dest(path.dist + 'images'))
-               .pipe(browserSync.stream());
+                .pipe(imagemin({
+        progressive: true,
+        interlaced : true,
+        svgoPlugins: [{removeUnknownsAndDefaults: false},
+            {cleanupIDs: false}]
+    }))
+                .pipe(gulp.dest(path.dist + 'images'))
+                .pipe(browserSync.stream());
 }));
 
 
@@ -223,9 +253,9 @@ gulp.task('images', gulp.series(async() => {
 gulp.task('jshint', gulp.series(async() => {
     return gulp.src(['bower.json',
         'gulpfile.js'].concat(project.js))
-               .pipe(jshint())
-               .pipe(jshint.reporter('jshint-stylish'))
-               .pipe(gulpif(enabled.failJSHint, jshint.reporter('fail')));
+                .pipe(jshint())
+                .pipe(jshint.reporter('jshint-stylish'))
+                .pipe(gulpif(enabled.failJSHint, jshint.reporter('fail')));
 }));
 
 
@@ -233,7 +263,7 @@ gulp.task('jshint', gulp.series(async() => {
  * 清理编译文件夹
  */
 gulp.task('clean', gulp.series(async() =>{
-  require('del').bind(null, [path.dist])
+    require('del').bind(null, [path.dist])
 }));
 
 
@@ -264,8 +294,8 @@ gulp.task('watch', gulp.parallel(function () {
  * 编译所有资源
  */
 gulp.task('build', gulp.parallel('styles', 'scripts', 'fonts',
-  'images', gulp.series(function(callback) {
-      callback();
+    'images', gulp.series(function(callback) {
+        callback();
     })));
 
 
