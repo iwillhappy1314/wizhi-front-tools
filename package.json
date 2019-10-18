@@ -61,7 +61,7 @@
     "gulp-sass-themes": "^2.0.2",
     "gulp-sourcemaps": "^2.6.5",
     "gulp-uglify": "^3.0.2",
-    "gulp-uglify-es": "^1.0.4",
+    "gulp-uglify-es": "^2.0.0",
     "imagemin-pngcrush": "^6.0.0",
     "jshint": "^2.10.2",
     "jshint-stylish": "^2.0.1",
