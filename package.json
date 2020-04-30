@@ -57,7 +57,7 @@
     "gulp-purgecss": "^2.1.0",
     "gulp-rename": "^2.0.0",
     "gulp-rev": "^9.0.0",
-    "gulp-sass": "^4.0.2",
+    "gulp-sass": "^4.1.0",
     "gulp-sass-themes": "^2.0.2",
     "gulp-sourcemaps": "^2.6.5",
     "gulp-uglify": "^3.0.2",
