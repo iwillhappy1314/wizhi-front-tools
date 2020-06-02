@@ -3513,13 +3513,14 @@ imagemin-optipng@^7.0.0:
     is-png "^2.0.0"
     optipng-bin "^6.0.0"
 
-imagemin-pngcrush@^6.0.0:
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/imagemin-pngcrush/-/imagemin-pngcrush-6.0.0.tgz#24882d24aafab04227853797f535525814ebbbed"
+imagemin-pngcrush@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/imagemin-pngcrush/-/imagemin-pngcrush-7.0.0.tgz#c29acd9af3287a2a8b91669476a841481eb739b5"
+  integrity sha512-yOp5f8RH2vd2x6B7P8WCprX1Cm3LjXqBu30wy5fJoEBrwwkyx8H2+vz1g/3FkSkldNURHcc0NmJ6r0waUNQTrw==
   dependencies:
     exec-buffer "^3.0.0"
-    is-png "^1.0.0"
-    pngcrush-bin "^4.0.0"
+    is-png "^2.0.0"
+    pngcrush-bin "^5.0.0"
 
 imagemin-svgo@^7.0.0:
   version "7.0.0"
@@ -3857,10 +3858,6 @@ is-plain-object@^2.0.1, is-plain-object@^2.0.3, is-plain-object@^2.0.4:
   integrity sha512-h5PpgXkWitc38BBMYawTYMWJHFZJVnBquFE57xFpjB8pJFiF6gZ+bU+WyI/yqXiFR5mdLsgYNaPe8uao6Uv9Og==
   dependencies:
     isobject "^3.0.1"
-
-is-png@^1.0.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/is-png/-/is-png-1.1.0.tgz#d574b12bf275c0350455570b0e5b57ab062077ce"
 
 is-png@^2.0.0:
   version "2.0.0"
@@ -5445,9 +5442,10 @@ plur@^3.0.1:
   dependencies:
     irregular-plurals "^2.0.0"
 
-pngcrush-bin@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/pngcrush-bin/-/pngcrush-bin-4.0.0.tgz#a2450ce952dc165c290d8b4be37478ad38fca6e7"
+pngcrush-bin@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/pngcrush-bin/-/pngcrush-bin-5.0.0.tgz#cbe1b8828aa9a0a0063616a9d63b2e1c88a34b1b"
+  integrity sha512-a3dq08ZSpclau8Ry/jQmU8uO9zNXc7NIZZPDSj+7oGS6sHHegzgOFMkGD5fXr+jiQVA9j20YkIdsBxc6UHeJQA==
   dependencies:
     bin-build "^3.0.0"
     bin-wrapper "^4.0.0"
