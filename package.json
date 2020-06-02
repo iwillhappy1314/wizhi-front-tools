@@ -34,7 +34,7 @@
     "IE 10"
   ],
   "devDependencies": {
-    "@babel/core": "^7.9.6",
+    "@babel/core": "^7.10.2",
     "@fullhuman/postcss-purgecss": "^2.1.0",
     "asset-builder": "^2.0.0",
     "browser-sync": "^2.26.7",
