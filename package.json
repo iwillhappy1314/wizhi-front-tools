@@ -77,6 +77,6 @@
   },
   "dependencies": {
     "bulma": "^0.8.1",
-    "tailwindcss": "^1.1.4"
+    "tailwindcss": "^1.7.1"
   }
 }
