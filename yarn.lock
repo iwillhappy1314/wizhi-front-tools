@@ -258,6 +258,11 @@
   version "1.5.2"
   resolved "https://registry.yarnpkg.com/@types/q/-/q-1.5.2.tgz#690a1475b84f2a884fd07cd797c00f5f31356ea8"
 
+"@wenprise/purgecss-with-wordpress@^1.0.4":
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@wenprise/purgecss-with-wordpress/-/purgecss-with-wordpress-1.0.4.tgz#0214069b1e25acf2113872cb06854081a0f620cb"
+  integrity sha512-+IX+mh7ceyMhWrLUFIAdcntRMLRpXShIYKr07SuHcXbKpGRlYylzsoDKBnA0ggJv0WUBFKQAyBd7IncgpgQXCQ==
+
 abbrev@1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.1.tgz#f8f2c887ad10bf67f634f005b6987fed3179aac8"

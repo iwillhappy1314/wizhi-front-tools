@@ -36,6 +36,7 @@
   "devDependencies": {
     "@babel/core": "^7.9.6",
     "@fullhuman/postcss-purgecss": "^2.1.0",
+    "@wenprise/purgecss-with-wordpress": "^1.0.4",
     "asset-builder": "^2.0.0",
     "browser-sync": "^2.26.7",
     "del": "^5.1.0",
